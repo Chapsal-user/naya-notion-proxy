@@ -1,0 +1,16 @@
+{
+  "name": "naya-notion-proxy",
+  "version": "1.0.0",
+  "description": "API Proxy pour connecter Naya X (GPT) à Notion sans limites",
+  "main": "api/index.js",
+  "scripts": {
+    "dev": "vercel dev",
+    "deploy": "vercel --prod"
+  },
+  "dependencies": {
+    "@notionhq/client": "^2.2.15"
+  },
+  "engines": {
+    "node": ">=18.x"
+  }
+}

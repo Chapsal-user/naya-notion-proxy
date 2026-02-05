@@ -1,0 +1,197 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Naya Notion Proxy API",
+    "description": "API proxy pour accéder à Notion sans limites de taille. Gère automatiquement les documents volumineux avec résumés intelligents.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://VOTRE-PROJET.vercel.app",
+      "description": "Remplacer par votre URL Vercel après déploiement"
+    }
+  ],
+  "paths": {
+    "/api/search": {
+      "get": {
+        "operationId": "searchNotion",
+        "summary": "Rechercher dans Notion avec contenu complet",
+        "description": "Recherche des pages Notion et retourne leur contenu complet, même pour les documents volumineux. Le contenu est automatiquement résumé si trop long.",
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Terme de recherche (ex: 'posts Facebook', 'Marc profile', 'workflow')"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10,
+              "maximum": 20
+            },
+            "description": "Nombre de résultats maximum"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Résultats trouvés avec contenu complet",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "query": {
+                      "type": "string"
+                    },
+                    "results_count": {
+                      "type": "integer"
+                    },
+                    "results": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {"type": "string"},
+                          "title": {"type": "string"},
+                          "url": {"type": "string"},
+                          "content": {"type": "string"},
+                          "content_length": {"type": "integer"},
+                          "truncated": {"type": "boolean"}
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/read": {
+      "get": {
+        "operationId": "readPage",
+        "summary": "Lire une page complète",
+        "description": "Lit le contenu complet d'une page Notion spécifique, organisé par sections. Peut filtrer par section si nécessaire.",
+        "parameters": [
+          {
+            "name": "page_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID de la page Notion (avec ou sans tirets)"
+          },
+          {
+            "name": "section",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Nom ou mot-clé de la section à extraire (optionnel)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Page lue avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {"type": "boolean"},
+                    "page": {
+                      "type": "object",
+                      "properties": {
+                        "id": {"type": "string"},
+                        "title": {"type": "string"},
+                        "url": {"type": "string"}
+                      }
+                    },
+                    "sections_count": {"type": "integer"},
+                    "content": {"type": "string"},
+                    "content_length": {"type": "integer"}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/extract": {
+      "get": {
+        "operationId": "extractKeywords",
+        "summary": "Extraire sections par mots-clés",
+        "description": "Recherche un document et extrait uniquement les sections contenant les mots-clés spécifiés. Idéal pour trouver des informations précises dans de gros documents.",
+        "parameters": [
+          {
+            "name": "doc_name",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Nom du document à chercher (ex: 'posts références', 'bridge document')"
+          },
+          {
+            "name": "keywords",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Mots-clés à chercher, séparés par des virgules (ex: 'hooks,métaphores,CTA')"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sections extraites avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {"type": "boolean"},
+                    "document": {
+                      "type": "object",
+                      "properties": {
+                        "id": {"type": "string"},
+                        "title": {"type": "string"},
+                        "url": {"type": "string"}
+                      }
+                    },
+                    "search": {
+                      "type": "object",
+                      "properties": {
+                        "keywords": {
+                          "type": "array",
+                          "items": {"type": "string"}
+                        },
+                        "sections_found": {"type": "integer"}
+                      }
+                    },
+                    "extracted_content": {"type": "string"},
+                    "content_length": {"type": "integer"}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

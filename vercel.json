@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "name": "naya-notion-proxy",
+  "builds": [
+    {
+      "src": "api/**/*.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
+    }
+  ],
+  "env": {
+    "NOTION_API_KEY": "@notion-api-key",
+    "NOTION_VERSION": "2022-06-28"
+  }
+}
